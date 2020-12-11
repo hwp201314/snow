@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        canvas {
+            background: #000;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="snow"></canvas>
+
+    <script>
+        /**@type{HTMLCanvasElement}*/
+        var canvas = document.getElementById("snow");
+        var context = canvas.getContext("2d");
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        function snow() {
+            context.save();
+            context.beginPath();
+            context.translate(100, 100);
+            context.moveTo(-20, 0);
+            context.lineTo(20, 0);
+            context.strokeStyle = "#fff";
+            context.lineWidth = 5;
+            context.lineCap = "round";
+
+            var disY = Math.sin(60 * Math.PI / 180) * 20;
+            var disX = Math.sin(30 * Math.PI / 180) * 20;
+            context.moveTo(-disX, -disY);
+            context.lineTo(disX, disY);
+            context.moveTo(-disX, disY);
+            context.lineTo(disX, -disY);
+
+            context.stroke();
+            context.restore();
+
+
+            context.save();
+            context.beginPath();
+            context.translate(50, 50);
+            context.scale(.5, .5);
+            context.rotate(20 * Math.PI / 180);
+            context.moveTo(-20, 0);
+            context.lineTo(20, 0);
+            context.strokeStyle = "#fff";
+            context.lineWidth = 5;
+            context.lineCap = "round";
+
+            var disY = Math.sin(60 * Math.PI / 180) * 20;
+            var disX = Math.sin(30 * Math.PI / 180) * 20;
+            context.moveTo(-disX, -disY);
+            context.lineTo(disX, disY);
+            context.moveTo(-disX, disY);
+            context.lineTo(disX, -disY);
+
+            context.stroke();
+            context.restore();
+        }
+        // snow();
+
+        /*
+        x,y表示雪花中心点位置
+        scale表示缩放大小
+        speedX表示x的移动速度
+        speedR表示旋转的速度
+        */
+        function Snow(x, y, scale, rotate, speedX, speedY, speedR) {
+            this.x = x;
+            this.y = y;
+            this.scale = scale;
+            this.rotate = rotate;
+            this.speedX = speedX;
+            this.speedY = speedY;
+            this.speedR = speedR;
+        }
+        Snow.prototype.render = function () {
+            context.save();
+            context.beginPath();
+            context.translate(this.x, this.y);
+            context.scale(this.scale, this.scale);
+            context.rotate(this.rotate * Math.PI / 180);
+            context.moveTo(-20, 0);
+            context.lineTo(20, 0);
+            context.strokeStyle = "#fff";
+            context.lineWidth = 5;
+            context.lineCap = "round";
+
+            var disY = Math.sin(60 * Math.PI / 180) * 20;
+            var disX = Math.sin(30 * Math.PI / 180) * 20;
+            context.moveTo(-disX, -disY);
+            context.lineTo(disX, disY);
+            context.moveTo(-disX, disY);
+            context.lineTo(disX, -disY);
+
+            context.stroke();
+            context.restore();
+        }
+
+        var snowArray = [];
+        function init() {
+            var len = 100;
+            for (var i = 0; i < len; i++) {
+                var x = Math.random() * canvas.width;
+                var scale = Math.random() + 0.5;
+                var rotate = Math.random() * 60;
+                var speedX = Math.random() + 1;
+                var speedY = Math.random() + 5;
+                var speedR = Math.random() * 4 + 2;
+
+                (function (x, y, scale, rotate, speedX, speedY, speedR) {
+                    setTimeout(function () {
+                        var snow = new Snow(x, y, scale, rotate, speedX, speedY, speedR);
+                        snow.render();
+                        snowArray.push(snow);
+                    }, Math.random() * 8000);
+                })(x, 0, scale, rotate, speedX, speedY, speedR)
+            }
+            snowing();
+        }
+        init();
+
+        function snowing() {
+            setInterval(function () {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                for (var i = 0; i < snowArray.length; i++) {
+                    snowArray[i].x = (snowArray[i].x + snowArray[i].speedX) % canvas.width;
+                    snowArray[i].y = (snowArray[i].y + snowArray[i].speedY) % canvas.height;
+                    snowArray[i].rotate = (snowArray[i].rotate + snowArray[i].speedR) % 60;
+                    snowArray[i].render();
+                }
+            }, 30);
+        }
+    </script>
+</body>
+
+</html>
